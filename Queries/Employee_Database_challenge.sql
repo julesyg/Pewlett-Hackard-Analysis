@@ -1,13 +1,7 @@
--- Retrieve the emp_no, first_name, and last_name columns from the Employees table.
-SELECT emp_no, first_name, last_name FROM employees;
+-- DELIVERABLE 1
 
--- Retrieve the title, from_date, and to_date columns from the Titles table.
-SELECT title, from_date, to_date FROM titles;
-
--- Create a new table using the INTO clause.
--- Join both tables on the primary key.
--- Filter the data on the birth_date column to retrieve the employees who were born between 1952 and 1955. 
--- Then, order by the employee number.
+-- Create a Retirement Titles table for employees who are born between January 1, 1952 
+-- and December 31, 1955.
 
 SELECT  employees.emp_no, 
         employees.first_name, 
@@ -24,13 +18,10 @@ ORDER BY emp_no ASC;
 
 SELECT * FROM retirement_title
 
--- Export the Retirement Titles table from the previous step as retirement_titles.csv and save it to your Data folder in the Pewlett-Hackard-Analysis folder.
-
+-- Create a Unique Titles table that contains the employee number, first and last name, 
+-- and most recent title.
 
 SElECT emp_no, first_name, last_name, title from retirement_title
-
--- Exclude those employees that have already left the company by filtering on to_date to keep only those dates that are equal to '9999-01-01'.
--- Create a Unique Titles table using the INTO clause.
 
 SELECT DISTINCT ON (retirement_title.emp_no) retirement_title.emp_no,
     retirement_title.first_name,
@@ -43,10 +34,9 @@ ORDER BY retirement_title.emp_no DESC;
 
 SELECT * FROM unique_titles
 
--- Write another query in the Employee_Database_challenge.sql file to retrieve the 
--- number of employees by their most recent job title who are about to retire.
+-- create a Retiring Titles table that contains the number of titles filled by
+--  employees who are retiring. 
 
--- Employee count by department number
 SELECT COUNT(ut.emp_no), ut.title
 INTO retiring_titles
 FROM unique_titles as ut
@@ -54,3 +44,27 @@ GROUP BY ut.title
 ORDER BY COUNT(ut.emp_no) DESC;
 
 SELECT * FROM retiring_titles
+
+-- DELIVERABLE 2
+
+-- Query written and executed to create a Mentorship Eligibility table for 
+-- current employees who were born between January 1, 1965 and December 31, 1965.
+
+SELECT DISTINCT ON (e.emp_no) e.emp_no,
+        e.first_name,
+        e.last_name,
+        e.birth_date,
+        de.from_date,
+        de.to_date,
+        t.title
+INTO mentorship_eligibilty
+FROM employees AS e
+INNER JOIN dept_emp as de
+ON (e.emp_no = de.emp_no)
+INNER JOIN titles as t
+ON (e.emp_no = t.emp_no)
+WHERE (e.birth_date BETWEEN '1965-01-01' AND '1965-12-31')
+AND (de.to_date = '9999-01-01')
+ORDER BY e.emp_no DESC;
+
+SELECT * FROM mentorship_eligibilty
